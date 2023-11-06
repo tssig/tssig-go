@@ -45,7 +45,7 @@ func (v *Verifier) VerifyIssuer(i *Issuer) error {
 	}
 
 	if len(i.LeafPublicKeyDer) == 0 {
-		return errors.New("intermediate public key der has not been set")
+		return errors.New("leaf public key der has not been set")
 	}
 
 	//---
