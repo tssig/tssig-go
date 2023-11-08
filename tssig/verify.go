@@ -40,7 +40,7 @@ func NewVerifierWithKeyLookup(trustedIssuers TrustedIssuerKeyCheck, keyLookup Ke
 // VerifyIssuer Verifies that the Leaf's public key has been signed by the Root Private Key,
 func (v *Verifier) VerifyIssuer(i *Issuer) error {
 
-	if len(i.KeyUrl) == 0 {
+	if len(i.RootPublicKeyUrl) == 0 {
 		return errors.New("issuer key url has not been set")
 	}
 
@@ -51,16 +51,16 @@ func (v *Verifier) VerifyIssuer(i *Issuer) error {
 	//---
 
 	// Check if we actually trust the issuer
-	if trusted, err := v.trustedIssuers.Trusted(i.KeyUrl); !trusted || err != nil {
+	if trusted, err := v.trustedIssuers.Trusted(i.RootPublicKeyUrl); !trusted || err != nil {
 		if err != nil {
 			return err
 		}
-		return fmt.Errorf("issuer key %s is not trusted", i.KeyUrl)
+		return fmt.Errorf("issuer key %s is not trusted", i.RootPublicKeyUrl)
 	}
 
 	//---
 
-	der, err := v.keyLookup.Get(i.KeyUrl)
+	der, err := v.keyLookup.Get(i.RootPublicKeyUrl)
 	if err != nil {
 		return err
 	}
@@ -74,10 +74,10 @@ func (v *Verifier) VerifyIssuer(i *Issuer) error {
 
 	switch typedKey := public.(type) {
 	case *ecdsa.PublicKey:
-		hash := sha256.Sum256(i.LeafPublicKeyDer)
-		valid = ecdsa.VerifyASN1(typedKey, hash[:], i.LeafPublicKeyDerSignature)
+		hash := sha256.Sum256(i.BytesToSign())
+		valid = ecdsa.VerifyASN1(typedKey, hash[:], i.Signature)
 	case ed25519.PublicKey:
-		valid = ed25519.Verify(typedKey, i.LeafPublicKeyDer, i.LeafPublicKeyDerSignature)
+		valid = ed25519.Verify(typedKey, i.BytesToSign(), i.Signature)
 	default:
 		err = errors.New("unknown key type")
 	}

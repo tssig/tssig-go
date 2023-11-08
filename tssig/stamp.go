@@ -8,11 +8,18 @@ import (
 	"time"
 )
 
+/*
+The SignedTimeStamp represents:
+  - The Issuer who has signed the time stamp
+  - The user provided Digest
+  - The Datetime at which we signed it
+  - The Signature
+*/
 type SignedTimeStamp struct {
 	Issuer    *Issuer   `json:"issuer"`
 	Datetime  time.Time `json:"datetime"`
 	Digest    bytes     `json:"digest"`
-	Signature bytes     `json:"sig"`
+	Signature bytes     `json:"signature"`
 }
 
 // NewSignedTimeStamp Creates a new instance of SignedTimeStamp
@@ -34,9 +41,13 @@ func NewSignedTimeStamp(digest string) (*SignedTimeStamp, error) {
 	return ss, nil
 }
 
-// BytesToSign The bytes which we are signing, made up of the original digest passed to us, and the current time.
+// BytesToSign The bytes which we are signing, made up of:
+//   - The originally provided digest
+//   - The Issuer's signature
+//   - The current datetime
 func (ss *SignedTimeStamp) BytesToSign() []byte {
 	message := ss.Digest
+	message = append(message, ss.Issuer.Signature...)
 	return ss.Datetime.AppendFormat(message, time.RFC3339Nano)
 }
 
