@@ -2,7 +2,7 @@ package tssig
 
 import "encoding/base64"
 
-// A custom type for []byte to allow URLEncoding with Base64.s
+// A custom type for []byte to allow URLEncoding with Base64.
 type bytes []byte
 
 func (s bytes) MarshalJSON() ([]byte, error) {
@@ -27,7 +27,7 @@ func (s *bytes) UnmarshalJSON(data []byte) error {
 	buffer := make(bytes, base64.URLEncoding.DecodedLen(len(dataWithoutQuotes)))
 	l, err := base64.URLEncoding.Decode(buffer, dataWithoutQuotes)
 
-	// THe original buffer is often too big, thus we only return the length l decoded - the relevant bytes.
+	// The original buffer is often too big, thus we only return the length l decoded - the relevant bytes.
 	*s = buffer[:l]
 
 	return err

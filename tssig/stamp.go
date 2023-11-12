@@ -30,8 +30,16 @@ func NewSignedTimeStamp(digest string) (*SignedTimeStamp, error) {
 		return nil, err
 	}
 
-	if len(digestBytes) != 32 {
-		return nil, fmt.Errorf("digest must be exactly 32 bytes / 256 bites. %d bytes found", len(digestBytes))
+	switch length := len(digestBytes); length {
+	case 224 / 8:
+	case 256 / 8:
+	case 384 / 8:
+	case 512 / 8:
+	default:
+		return nil, fmt.Errorf(
+			"digest must be exactly 224, 256, 384, or 512 bits. %d bits found",
+			len(digestBytes)*8,
+		)
 	}
 
 	ss := &SignedTimeStamp{
