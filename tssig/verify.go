@@ -1,6 +1,7 @@
 package tssig
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/sha256"
@@ -127,4 +128,13 @@ func (v *Verifier) Verify(sts *SignedTimeStamp) error {
 
 	// Get the result of the Issuer verification.
 	return <-ch
+}
+
+// VerifyWithDigest Checks the Time Stamps digest matches the expected one passed.
+// If so, it goes ahead and does the full verification.
+func (v *Verifier) VerifyWithDigest(sts *SignedTimeStamp, digest []byte) error {
+	if !bytes.Equal(digest, sts.Digest) {
+		return errors.New("the passed digest does not match the one associated with the time stamps")
+	}
+	return v.Verify(sts)
 }
