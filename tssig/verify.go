@@ -134,7 +134,7 @@ func (v *Verifier) Verify(sts *SignedTimeStamp) error {
 // If so, it goes ahead and does the full verification.
 func (v *Verifier) VerifyWithDigest(sts *SignedTimeStamp, digest []byte) error {
 	if !bytes.Equal(digest, sts.Digest) {
-		return errors.New("the passed digest does not match the one associated with the time stamps")
+		return errors.New("the passed digest does not match the one associated with the time stamp")
 	}
 	return v.Verify(sts)
 }
