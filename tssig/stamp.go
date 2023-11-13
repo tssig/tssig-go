@@ -18,8 +18,8 @@ The SignedTimeStamp represents:
 type SignedTimeStamp struct {
 	Issuer    *Issuer   `json:"issuer"`
 	Datetime  time.Time `json:"datetime"`
-	Digest    bytes     `json:"digest"`
-	Signature bytes     `json:"signature"`
+	Digest    b64bytes  `json:"digest"`
+	Signature b64bytes  `json:"signature"`
 }
 
 // NewSignedTimeStamp Creates a new instance of SignedTimeStamp

@@ -20,9 +20,9 @@ The Issuer represents:
   - The issuer's signature, which signs the Root Key's URL, and the Leaf Key DER.
 */
 type Issuer struct {
-	RootPublicKeyUrl string `json:"root-key"`
-	LeafPublicKeyDer bytes  `json:"leaf-key"`
-	Signature        bytes  `json:"signature"`
+	RootPublicKeyUrl string   `json:"root-key"`
+	LeafPublicKeyDer b64bytes `json:"leaf-key"`
+	Signature        b64bytes `json:"signature"`
 
 	leafPrivateKey ed25519.PrivateKey
 }
@@ -42,7 +42,7 @@ func NewIssuer(public ed25519.PublicKey, private ed25519.PrivateKey) (*Issuer, e
 
 // BytesToSign Returns the bytes to be signed in the Issuer's signature.
 func (iss *Issuer) BytesToSign() []byte {
-	return append(bytes(iss.RootPublicKeyUrl), iss.LeafPublicKeyDer...)
+	return append(b64bytes(iss.RootPublicKeyUrl), iss.LeafPublicKeyDer...)
 }
 
 // SignIssuer Signs the Key URL, and the Leaf Public Key, with the Root Private Key.

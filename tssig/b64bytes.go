@@ -3,9 +3,9 @@ package tssig
 import "encoding/base64"
 
 // A custom type for []byte to allow URLEncoding with Base64.
-type bytes []byte
+type b64bytes []byte
 
-func (s bytes) MarshalJSON() ([]byte, error) {
+func (s b64bytes) MarshalJSON() ([]byte, error) {
 	encodedVal := make([]byte, base64.URLEncoding.EncodedLen(len(s)))
 	base64.URLEncoding.Encode(encodedVal, s)
 
@@ -19,12 +19,12 @@ func (s bytes) MarshalJSON() ([]byte, error) {
 	return result, nil
 }
 
-func (s *bytes) UnmarshalJSON(data []byte) error {
+func (s *b64bytes) UnmarshalJSON(data []byte) error {
 
 	// Remove the quote marks (") - the first and last bytes
 	dataWithoutQuotes := data[1 : len(data)-1]
 
-	buffer := make(bytes, base64.URLEncoding.DecodedLen(len(dataWithoutQuotes)))
+	buffer := make(b64bytes, base64.URLEncoding.DecodedLen(len(dataWithoutQuotes)))
 	l, err := base64.URLEncoding.Decode(buffer, dataWithoutQuotes)
 
 	// The original buffer is often too big, thus we only return the length l decoded - the relevant bytes.
