@@ -5,9 +5,11 @@ import (
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/sha256"
+	"crypto/sha512"
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"hash"
 	"time"
 )
 
@@ -75,8 +77,19 @@ func (v *Verifier) VerifyIssuer(i *Issuer) error {
 
 	switch typedKey := public.(type) {
 	case *ecdsa.PublicKey:
-		hash := sha256.Sum256(i.BytesToSign())
-		valid = ecdsa.VerifyASN1(typedKey, hash[:], i.Signature)
+		var h hash.Hash
+		switch typedKey.Params().BitSize {
+		case 256:
+			h = sha256.New()
+		case 384:
+			h = sha512.New384()
+		case 521:
+			h = sha512.New()
+		default:
+			return fmt.Errorf("invalid key size - must be 256, 384 or 521. %d found", typedKey.Params().BitSize)
+		}
+		h.Write(i.BytesToSign())
+		valid = ecdsa.VerifyASN1(typedKey, h.Sum(nil), i.Signature)
 	case ed25519.PublicKey:
 		valid = ed25519.Verify(typedKey, i.BytesToSign(), i.Signature)
 	default:

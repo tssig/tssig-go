@@ -7,7 +7,7 @@ import (
 )
 
 // MaxHttpDownloadSize Max size in bytes of the allowed body returned from the Issuer Key URL.
-const MaxHttpDownloadSize = 128
+const MaxHttpDownloadSize = 192
 
 // KeyLookup An interface for retrieving a root public key.
 // Primarily designed to a caching layer can be added.
@@ -42,7 +42,7 @@ func (l *HttpKeyLookup) Get(url string) ([]byte, error) {
 		)
 	} else if bufferSize < 0 {
 		// If the content size is unknown, we'll allow the max size.
-		// ecdsa der public keys appear to be about ~90 bytes.
+		// ecdsa P-521 der public keys appear to be about ~160 bytes.
 		// ed25519 der public keys are smaller.
 
 		// We add 1 to detect responses' that are too large.
