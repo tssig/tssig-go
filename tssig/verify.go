@@ -97,7 +97,7 @@ func (v *Verifier) VerifyIssuer(i *Issuer) error {
 	}
 
 	if !valid {
-		return errors.New("issue has invalid signature")
+		return errors.New("issuer has invalid signature")
 	}
 
 	return nil
