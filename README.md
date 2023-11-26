@@ -1,7 +1,7 @@
 
 # Time Stamp Signing (TSSig)
 
-> **All very much a work in progress.  Everything subject to change.**
+> **All very much a work in progress.  Everything subject to change until v1.0.**
 
 TSSig is an opinionated pattern for cryptographically signing a time stamp, combined with  a (hash) digest, by someone who represents a trusted third party.
 
@@ -20,7 +20,7 @@ Then we are specifying `keys.tssig.com` as an authority we trust. And as accessi
 
 ## Questions...
 
-### What does a TSSIg signed time stamp look like?
+### What does a TSSig signed time stamp look like?
 ```json  
 {    
     "issuer": {    
@@ -54,15 +54,18 @@ The **leaf key** always uses **Ed25519**. This gives us an excellent level of se
 The **root key** also supports **Ed25519**, but additionally  *ecdsa* with the curves **secp256r1**, **secp384r1** and **secp521r1**. This is to facilitate a greater range of HSMs where *Ed25519* is lesser well supported.
 
 ### Is there an easy way to give it a try?
-Sure - give this a try. (Drop the `jq` if you don't have it installed, it just makes it look nice and pretty).
+Sure - give this a go. (Drop the `jq` if you don't have it installed, it just makes it look nice and pretty).
 ```shell  
 curl -X POST https://sign.tssig.org \
--H 'Content-Type: application/json' \  
--d '{"digest": "2Mcs3gT-n-6ZnJy8uRmSH4OKOXMwC0Ehaf-2SVrfBrM="}' | jq  
+-H 'Content-Type: application/json' \
+-d '{"digest": "2Mcs3gT-n-6ZnJy8uRmSH4OKOXMwC0Ehaf-2SVrfBrM="}' | jq
 ```  
-You'll get a response signed with one of our test keys.
+This hits our *testing* server - you'll get a response signed with one of our test keys. You'll be able to verify the output using a TSSig client, as long as you trust our testing server's issuer prefix: `https://keys-that-should-only-be-used-for-testing.tssig.org/`
 
 ### Isn't your output a bit long?
 Well it could be shorter, *but* we've prioritised:
 - Human readability of the output - people time is usually more precious than CPU time or disk space.
 - An opinionated view on having a two key strategy to help facilitate good key management practises.
+
+### How many times can a leaf key be reused?
+The *leaf key* is designed to be short lived (anywhere from a few seconds, up to a few hours). During that time the leaf key can security be reused as many times as needed. The "key" point to make about a leaf key is to avoid storing it on any persistent storage device; keep it in RAM.
