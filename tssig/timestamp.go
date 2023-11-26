@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -25,8 +26,11 @@ type SignedTimeStamp struct {
 // NewSignedTimeStamp Creates a new instance of SignedTimeStamp
 // We pass digest in as a string as we want to ensure that it's URL encoded base64.
 func NewSignedTimeStamp(digest string) (*SignedTimeStamp, error) {
-	digestBytes, err := base64.URLEncoding.DecodeString(digest)
+	digestBytes, err := base64.RawURLEncoding.DecodeString(digest)
 	if err != nil {
+		if strings.HasSuffix(digest, "=") {
+			return nil, fmt.Errorf("disgest input must not include base64 padding")
+		}
 		return nil, err
 	}
 
